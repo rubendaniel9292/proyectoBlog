@@ -1,5 +1,7 @@
 /*ESQUEMA DE MODELO PARA CREAR NUEVOS ARTICULOS DE LA BD*/
 import { Schema, model, now } from "mongoose";
+
+
 //estructura del modelo
 const articleShema = new Schema({
     //datos del ariticulo
@@ -8,4 +10,4 @@ const articleShema = new Schema({
     date: { type: Date, default: now },
     image: { type: String, default: 'default.png' }
 });
-export default model('Artículo', articleShema, 'articles');
+export default model('Article', articleShema, 'articles');

@@ -12,7 +12,8 @@ const port = 3900;
 
 app.use(cors());
 //convertir body a objeto js ejecutando un diddelwere 
-app.use(express.json());
+app.use(express.json());//recibe datos de contetn-type app/json, opcion raw del body en postman
+app.use(express.urlencoded({extended:true}));//recibe dato en form-urlencode
 
 //RUTAS
 //definir ruta
@@ -22,7 +23,7 @@ app.use('/api', ruotesArticle);
 
 
 //crear rutas de pruebas
-app.get('/probando', (req, res) => {
+app.get('/prueba', (req, res) => {
     console.log('Se ha ejecutado el endpoint probando');
     return res.status(200).send(
         //la api devuelve dentro del calback un onbjeto json
