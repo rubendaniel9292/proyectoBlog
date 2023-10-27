@@ -2,7 +2,7 @@
 import express from 'express';
 const router = express.Router();
 //cargar el controlador
-import { prueba, curso, save, getArticle, getArticleSrot, uno } from '../controller/Articles.Controler';
+import { prueba, curso, save, getArticle, getArticleSrot, uno, deleteArticle, upDate } from '../controller/Articles.Controler';
 
 //rutas de pruebas
 router.get('/ruta-de-prueba', prueba);
@@ -16,11 +16,18 @@ router.post('/crear', save);
 router.get('/articulos/:ultimos?', getArticleSrot);
 
 //ruta para  conseguir todos los articulos
-router.get('/articulos/:ultimos?', getArticle);
+router.get('/articulos', getArticle);
 
 //ruta para  conseguir un solo articulo con parametro id obligatorio
 router.get('/articulo/:id', uno);
-export default router;
 
+//ruta para eleiminar un articulo
+router.delete('/articulo/:id', deleteArticle);
+
+//ruta para actualizar el articulo
+router.put('/articulo/:id', upDate);
+
+
+export default router;
 
 
