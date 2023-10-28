@@ -1,7 +1,8 @@
 /*CONTROLADOR*/
 import { Request, Response } from "express";
-import validator from "validator";
+import { validation } from "../helper/validator";
 import Articles from "../model/Articles";
+import validator from "validator";
 //metodo para probar el controlador (puede comentarse o eliminarse)
 export const prueba = (req: Request, res: Response) => {
     return res
@@ -23,24 +24,35 @@ export const curso = (req: Request, res: Response) => {
     );
 };
 
+
 //Metodo para crear y guarar el articulo
 export const save = async (req: Request, res: Response) => {
-    //1: recoger los parametros por post a guardar
-    let params = req.body;
     //2: valdiar los datos datos vacios y longitud
     try {
+        //1: recoger los parametros por post a guardar
+        let params = req.body;
+         try {
+            validation(params);
+            console.log(params);
+        } catch (error) {
+            return res.status(400).json({
+                status: "error",
+                message: "Faltan datos por enviar",
+            });
+        }
+        
+       /*
         let validarTitle =
             !validator.isEmpty(params.title) &&
             validator.isLength(params.title, { min: 5, max: undefined });
         let validarContent = !validator.isEmpty(params.content);
         if (!validarTitle || !validarContent) {
             throw new Error("No se ha validado la informacion");
-        }
+        }*/
 
         //3: Creando objeto a guardar en la bd
         //asignar valores a objetos al modelo (manual o automatico)
         //article.title = params.title;(manual, para pocos parametros)
-
         const article = new Articles(params); //de manera automatica, para muchos paramtos
         const articleSaved = await article.save();
         return res.status(200).json({
@@ -49,9 +61,9 @@ export const save = async (req: Request, res: Response) => {
             message: "Artículo guardado con éxito.",
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             status: "error",
-            message: "Faltan datos por enviar o no se ha guardado el artículo",
+            message: "No se ha guardado el artículo",
         });
     }
 };
@@ -158,19 +170,21 @@ export const deleteArticle = async (req: Request, res: Response) => {
 
 //metodo para editar articulos
 export const upDate = async (req: Request, res: Response) => {
-    let id = req.params.id;
-    //recoger parametros del body
-    let params = req.body;
     try {
-        let validarTitle =
-            !validator.isEmpty(params.title) &&
-            validator.isLength(params.title, { min: 5, max: undefined });
-        let validarContent = !validator.isEmpty(params.content);
-        if (!validarTitle || !validarContent) {
-            throw new Error("No se ha validado la informacion");
+        let id = req.params.id;
+        //recoger parametros del body
+        let params = req.body;
+        //validar articulos
+        try {
+            validation(params);
+        } catch (error) {
+            return res.status(400).json({
+                status: "error",
+                message: "Faltan datos por enviar o no se ha guardado el artículo",
+            });
         }
-        //buscar y actualziar el articulo
 
+        //buscar y actualziar el articulo
         const articleUpDated = await Articles.findByIdAndUpdate({ _id: id }, params, { new: true })
         /* el tercer parametro del metodo se usa para indicar que después de la actualización,
         se debe devolver el documento actualizado en lugar del documento original.
@@ -181,11 +195,13 @@ export const upDate = async (req: Request, res: Response) => {
             article: articleUpDated,
             message: "Artículo actualizado con éxito.",
         });
+
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             status: "error",
-            message: "Faltan datos por enviar o no se ha guardado el artículo",
+            message: "Ocurrió un error al actualizar. No se actualizó el aritculo",
         });
+
     }
 
 
