@@ -2,7 +2,8 @@
 import { Request, Response } from "express";
 import { validation } from "../helper/validator";
 import Articles from "../model/Articles";
-import validator from "validator";
+import fs from 'fs';
+import path from 'path';
 //metodo para probar el controlador (puede comentarse o eliminarse)
 export const prueba = (req: Request, res: Response) => {
     return res
@@ -24,14 +25,13 @@ export const curso = (req: Request, res: Response) => {
     );
 };
 
-
 //Metodo para crear y guarar el articulo
 export const save = async (req: Request, res: Response) => {
     //2: valdiar los datos datos vacios y longitud
     try {
         //1: recoger los parametros por post a guardar
         let params = req.body;
-         try {
+        try {
             validation(params);
             console.log(params);
         } catch (error) {
@@ -40,15 +40,6 @@ export const save = async (req: Request, res: Response) => {
                 message: "Faltan datos por enviar",
             });
         }
-        
-       /*
-        let validarTitle =
-            !validator.isEmpty(params.title) &&
-            validator.isLength(params.title, { min: 5, max: undefined });
-        let validarContent = !validator.isEmpty(params.content);
-        if (!validarTitle || !validarContent) {
-            throw new Error("No se ha validado la informacion");
-        }*/
 
         //3: Creando objeto a guardar en la bd
         //asignar valores a objetos al modelo (manual o automatico)
@@ -88,7 +79,7 @@ export const getArticle = (req: Request, res: Response) => {
 };
 
 //metodo para conseguir el listado ordeando de todos articulos con metodos de Mongoose con el campo deseado
-export const getArticleSrot = (req: Request, res: Response) => {
+export const getArticleSort = (req: Request, res: Response) => {
 
     let query = Articles.find({});
 
@@ -105,12 +96,12 @@ export const getArticleSrot = (req: Request, res: Response) => {
 
     //parametro fecha: de mas antiguio a mas reciente con date:1
     //y de mas reciente a mas antiguio con date:-1
-    query.sort({ date: -1 })
+    query.sort({ date: -1 }).exec()
         .then((Articles: any) => {
             return res.status(200).send({
                 status: "success",
                 contador: Articles.length,
-                Articles,
+                Articles
             });
         })
         .catch((error: any) => {
@@ -125,7 +116,7 @@ export const getArticleSrot = (req: Request, res: Response) => {
 export const uno = (req: Request, res: Response) => {
     //1: recoger id por la url, buscar el articulo con el metodo findById y sino existe devolver un error 
     let id = req.params.id;
-    Articles.findById(id).then((Articles: any) => {
+    Articles.findById(id).exec().then((Articles: any) => {
         return res.status(200).json({
             status: "success",
             article: Articles
@@ -137,9 +128,6 @@ export const uno = (req: Request, res: Response) => {
             message: `No se han encontrado el articulo con id ${id}`,
         });
     });
-
-
-
 }
 
 //metodo para eliminar articulos
@@ -183,7 +171,6 @@ export const upDate = async (req: Request, res: Response) => {
                 message: "Faltan datos por enviar o no se ha guardado el artículo",
             });
         }
-
         //buscar y actualziar el articulo
         const articleUpDated = await Articles.findByIdAndUpdate({ _id: id }, params, { new: true })
         /* el tercer parametro del metodo se usa para indicar que después de la actualización,
@@ -201,8 +188,108 @@ export const upDate = async (req: Request, res: Response) => {
             status: "error",
             message: "Ocurrió un error al actualizar. No se actualizó el aritculo",
         });
-
     }
+}
 
+//metodo para subir imagenes con la ayuda de la liberia multer
+export const uplodadImg = async (req: Request, res: Response) => {
+    try {
+        //1: configurar multer en el archivos de rutas
+        //2: validar si existe el archicvo y recogerlo 
+        if (!req.file && !req.files) return res.status(400).json({
+            status: "error",
+            message: "Peticion invalidad"
+        });
 
+        //3: conseguir el nombre de la imagen 
+        let nameFile = req.file!.originalname;//con ! le decimos a TS que el req.file no es indefinido, de lo contrardio dara error
+        let fileSplit = nameFile.split('\.');
+        let nameExt = fileSplit[1];//segundo indice del nombre del arhivo despues de separarlo
+        //4: validar si la extencion correcta, sino se cumple lo eliminamos con un metodo nativo de node unlink
+        if (nameExt !== 'png' && nameExt !== 'jpg'
+            && nameExt !== 'jpeg' && nameExt !== 'svg'
+            && nameExt !== 'gif') {
+            fs.unlink(req.file!.path, (error) => {
+                return res.status(400).json({
+                    status: "error",
+                    error,
+                    extencion: nameExt,
+                    message: "Formato de archivo no válido"
+                });
+            })
+        } else {
+            //5: actualiza el articulo si todo sale bien
+            let id = req.params.id;
+
+            const articleUpDated = await Articles.findByIdAndUpdate({ _id: id }, { image: req.file!.filename }, { new: true })
+            return res.status(200).json({
+                status: "succes",
+                articleUpDated,
+                message: "Imagen añadida de manera exitosa",
+                fichero: req.file
+            });
+        }
+
+    } catch (error) {
+        return res.status(500).json({
+            status: "error",
+            message: "Ocurrió un error durante la carga del archivo.",
+            error: error
+        });
+    }
+}
+
+//metodo para consultar una imagen de manera individuall
+export const image = (req: Request, res: Response) => {
+    let fichero = req.params.fichero;
+    let ruta = './dist/img/articles/' + fichero;
+    console.log('Ruta:', ruta, req);
+
+    //comprueba si existe la ruta fisica, y 
+    fs.stat(ruta, (error, existe) => {
+        if (existe) {
+            return res.sendFile(path.resolve(ruta))
+        } else {
+            return res.status(500).json({
+                status: "error",
+                message: "La imagen no existe",
+                existe,
+                error,
+                ruta
+            });
+        }
+    })
+}
+
+//metodo para buscar articulos
+export const searcher = (req: Request, res: Response) => {
+    //1: sacar el string de busqueda
+    let search = req.params.busqueda;
+
+    //2: find OR y aplicar un ordem.
+    Articles.find({
+        //con i se comprueba si el titulo o el contenido incluye el string de busqueda
+        $or: [
+            { 'title': { '$regex': search, '$options': 'i' } },
+            { 'content': { '$regex': search, '$options': 'i' } }
+        ]
+    }).sort({ fecha: -1 }).exec().then((Articles: any) => {
+        //si la búsqueda no encuentra resultados, la promesa se rechaza y entra en el catch. 
+        //Se lo hace de esta manera usando promesas  porque el exec ya no admite calbaks y daba error 
+        if (Articles && Articles.length >= 0) {
+            return res.status(200).send({
+                status: "success",
+                contador: Articles.length,
+                Articles
+            });
+        } else {
+            //se usa el metodo reject para garantizar que se lance la promesa rechazada y entre al catch
+            return Promise.reject("No se han encontrado artículos");
+        }
+    }).catch((error: any) => {
+        return res.status(404).json({
+            status: "error",
+            error
+        });
+    });
 }

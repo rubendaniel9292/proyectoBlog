@@ -16,7 +16,7 @@ app.use(express.json());//recibe datos de contetn-type app/json, opcion raw del 
 app.use(express.urlencoded({extended:true}));//recibe dato en form-urlencode
 
 //RUTAS
-//definir ruta
+//definir ruta principal
 import ruotesArticle from './routes/Articles.Rutes';
 //cargar ruta
 app.use('/api', ruotesArticle);
