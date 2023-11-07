@@ -198,7 +198,7 @@ export const uplodadImg = async (req: Request, res: Response) => {
         //2: validar si existe el archicvo y recogerlo 
         if (!req.file && !req.files) return res.status(400).json({
             status: "error",
-            message: "Peticion invalidad"
+            message: "Peticion inválida"
         });
 
         //3: conseguir el nombre de la imagen 
@@ -223,7 +223,7 @@ export const uplodadImg = async (req: Request, res: Response) => {
 
             const articleUpDated = await Articles.findByIdAndUpdate({ _id: id }, { image: req.file!.filename }, { new: true })
             return res.status(200).json({
-                status: "succes",
+                status: "success",
                 articleUpDated,
                 message: "Imagen añadida de manera exitosa",
                 fichero: req.file
