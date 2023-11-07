@@ -1,4 +1,3 @@
-
 /*ESTILOS GENERALES*/
 body {
   background: #858688;
@@ -107,28 +106,27 @@ body {
   border-radius: 10px;
   box-shadow: 0px 0px 6px #ddd;
   margin: 20px;
-  padding-top: 60px;
-  padding-bottom: 60px;
+  padding-top: 30px;
+  padding-bottom: 30px;
   padding-left: 25px;
   padding-right: 25px;
   text-align: left;
-  max-height: 170px;
+  min-height: 250px;
 }
-.article-item h3{
+.article-item h3 {
   font-size: 30px;
-
 }
-.mask{
-  width: 20px;
-
+.article-item .mask {
+  width: 15%;
+  margin-right: 40px;
 }
-.mask img{
+.mask img {
   width: 100%;
   overflow: hidden;
   margin-right: 40px;
 }
 
-.jumbo{
+.jumbo {
   background: white;
   border-radius: 10px;
   box-shadow: 0px 0px 6px #ddd;
@@ -138,17 +136,15 @@ body {
   padding-bottom: 75px;
 }
 
-.jumbo h2{
+.jumbo h2 {
   font-size: 30px;
   color: #03228f;
-
 }
-.jumbo p{
+.jumbo p {
   font-size: 25px;
   color: #03228f;
   display: block;
   margin-bottom: 40px;
-
 }
 .button,
 button,
@@ -204,12 +200,8 @@ input[type="button"] {
   box-shadow: 0px 0px 6px #ddd;
 }
 
-.lateral input[type="text"],
-.lateral input[type="text"],
-.lateral textarea,
-.edit_form input[type="text"],
-.edit_form input[type="text"],
-.edit_form textarea {
+input,
+textarea {
   display: block;
   margin: 0 auto;
   margin-top: 15px;
@@ -218,7 +210,7 @@ input[type="button"] {
   background: #f6f7f9;
   color: #454545;
   width: 80%;
-  opacity: 4;
+  opacity: 1;
   outline: 0;
   border-color: transparent;
 }
@@ -228,11 +220,29 @@ input[type="button"] {
   margin-top: 10px;
 }
 
+.form-group {
+  width: 60%;
+  margin: 0 auto;
+}
+.form-group label {
+  display: block;
+  text-align: left;
+  color: #072bac;
+  margin-bottom: 5px;
+  font-size: 2rem;
+}
+.form-group input,
+textarea {
+  border: 1px solid;
+  outline: 0;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
 /*ESTILOS PARA EL PIE DE PÁGINA*/
 .footer {
   grid-area: footer;
-
- 
   color: #454545;
   border-top: 1px solid white;
   text-align: left;
