@@ -17,6 +17,7 @@ body {
     "content content content lateral"
     "footer footer footer footer";
   grid-template-rows: 100px 70px auto 30px;
+  grid-template-columns: 1fr 1fr 1fr 25%;
 }
 
 /*ESTILOS CABECERA*/
@@ -116,14 +117,33 @@ body {
 .article-item h3 {
   font-size: 30px;
 }
+
+.article-item h3 a {
+  text-decoration: none;
+}
 .article-item .mask {
-  width: 15%;
+  width: 50%;
   margin-right: 40px;
 }
 .mask img {
   width: 100%;
   overflow: hidden;
   margin-right: 40px;
+  object-fit: cover;
+}
+
+
+.form-group .mask img {
+  width: 250px;
+  width: 250px;
+  margin: 5px;
+  overflow: hidden;
+  border: 2px solid black;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
 }
 
 .jumbo {
@@ -149,7 +169,8 @@ body {
 .button,
 button,
 input[type="submit"],
-input[type="button"] {
+input[type="button"],
+.edit {
   width: 100px;
   background: #0b70e1;
   color: white;
@@ -261,7 +282,6 @@ textarea {
     justify-content: center;
     align-items: center;
   }
-
   .article-item {
     width: 80%;
   }

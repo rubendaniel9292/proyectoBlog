@@ -4,7 +4,7 @@ import { Ajax } from "../../helper/Ajax";
 import { Global } from "../../helper/Global";
 const CreateArticles = () => {
   //metodo para recoger datos del formulario
-  const { form, toChange, send } = useForm({});
+  const { form, toChange, resetForm } = useForm({});
   const [result, setResult] = useState('No guardado');
 
   //metodo para gurardar el articulo que se reciben del formulario
@@ -14,10 +14,13 @@ const CreateArticles = () => {
     let newArticle = form;//valor que devuelve el usefrom
     //guardar aticulo en el backen mediante peticion ajax
     const { datas } = await Ajax(Global.url + 'crear', 'POST', newArticle);
-    if(datas.status === 'success'){
+    if (datas.status === 'success') {
       setResult('Guardado');
-    }else setResult('Error');
-    
+      // Limpia los campos del formulario al llamar a la función resetForm
+      resetForm();
+
+    } else setResult('Error');
+
     //1:conseguir el file input
     const fileInput = document.querySelector('#file');
     //compobabo el resulatdo de la peficion ajax
@@ -30,9 +33,11 @@ const CreateArticles = () => {
 
       if (upLoadImg.datas.status === 'success') {
         setResult('Guardado');
+        fileInput.value = '';
+
       } else setResult('Error');
       console.log(upLoadImg.datas);
-    } 
+    }
 
   }
 
@@ -41,27 +46,25 @@ const CreateArticles = () => {
       <div className="jumbo">
 
         <h3>Formulario para crear un artículo</h3>
-        <strong>{result === 'Guardado' ? 'Articulo guardado con exito.' : ''}</strong>
+        <strong>{result === 'Guardado' ? 'Artículo guardado con exito.' : ''}</strong>
         <strong>{result === 'Error' ? 'Los proporcionados son incorrectos o imcompletos' : ''}</strong>
         <form className="form" onSubmit={savedArticle}>
 
           <div className="form-group">
             <label htmlFor="title">Título</label>
-            <input type="text" placeholder="Titulo" id="title" name="title" onChange={toChange}></input>
+            <input type="text" placeholder="Titulo" id="title" name="title" onChange={toChange} value={form.title || ''}></input>
           </div>
 
           <div className="form-group">
             <label htmlFor="content">Contenido</label>
-            <textarea placeholder="Contenido" id="content" name="content" onChange={toChange}></textarea>
+            <textarea placeholder="Contenido" id="content" name="content" value={form.content || ''} onChange={toChange}></textarea>
           </div>
 
           <div className="form-group">
             <label htmlFor="file">Imagen</label>
-            <input type="file" placeholder="Titulo" id="file" name="file" ></input>
+            <input type="file" id="file" onChange={toChange} name="file"   ></input>
           </div>
-
-
-          <input className="btn bnt-success" type="submit" name="" value="Guardar" id="save"></input>
+          <input className="btn bnt-success" type="submit" value="Guardar" id="save"></input>
 
         </form>
 
