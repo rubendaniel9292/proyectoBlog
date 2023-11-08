@@ -28,7 +28,7 @@ router.delete('/articulo/:id', deleteArticle);
 //ruta para actualizar el articulo
 router.put('/articulo/:id', upDate);
 
-//ruta para actualizar el articulo
+//ruta para actualizar el articulo con imagen
 const storage = multer.diskStorage({
     //La carpeta donde se guardó el archivo, cb: el directorio del archivo 
     destination: function (req, file, cb) {

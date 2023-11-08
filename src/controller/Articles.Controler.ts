@@ -141,6 +141,20 @@ export const deleteArticle = async (req: Request, res: Response) => {
                 message: `No se encontró un artículo con el ID ${id}.`
             });
         };
+        // 1. Obtener el nombre del archivo de imagen del artículo eliminado
+        const imageFileName = deletedArticle.image;
+        // 2. Elimina el archivo de imagen del sistema de archivos
+        if (imageFileName) {
+            const imagePath = path.join(process.cwd(), 'dist', 'img', 'articles', imageFileName);
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    console.error(`Error al eliminar el archivo de imagen: ${err}`);
+                } else {
+                    console.log(`Archivo de imagen ${imageFileName} eliminado con éxito.`);
+                }
+            });
+        }
+
         return res.status(200).json({
             status: "success",
             article: deletedArticle,
@@ -153,7 +167,6 @@ export const deleteArticle = async (req: Request, res: Response) => {
             message: `Error al borrar el artículo con el ID ${id}.`
         });
     }
-
 }
 
 //metodo para editar articulos
@@ -162,6 +175,19 @@ export const upDate = async (req: Request, res: Response) => {
         let id = req.params.id;
         //recoger parametros del body
         let params = req.body;
+
+        // Recoge el artículo actual
+        const article = await Articles.findById(id);
+
+        if (!article) {
+            return res.status(404).json({
+                status: "error",
+                message: "Artículo no encontrado",
+            });
+        }
+
+
+
         //validar articulos
         try {
             validation(params);
@@ -177,6 +203,24 @@ export const upDate = async (req: Request, res: Response) => {
         se debe devolver el documento actualizado en lugar del documento original.
         Esto te permite obtener el documento actualizado después de la operación.
         */
+        // Verifica si se ha cargado una nueva imagen
+
+        // 1. Obtener el nombre del archivo de imagen del artículo eliminado
+        const deletedArticle = await Articles.findOne({ _id: id });//
+        const imageFileName = deletedArticle!.image;
+        // 2. Elimina el archivo de imagen del sistema de archivos
+        if (imageFileName) {
+            const imagePath = path.join(process.cwd(), 'dist', 'img', 'articles', imageFileName);
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    console.error(`Error al eliminar el archivo de imagen: ${err}`);
+                } else {
+                    console.log(`Archivo de imagen ${imageFileName} eliminado con éxito.`);
+                }
+            });
+        }
+
+
         return res.status(200).json({
             status: "success",
             article: articleUpDated,
