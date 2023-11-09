@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useForm } from '../hooks/useForm';
 import { Ajax } from "../../helper/Ajax";
 import { Global } from "../../helper/Global";
+import { alertError, alertSucces} from "../../helper/Alerts";
+
 const CreateArticles = () => {
   //metodo para recoger datos del formulario
   const { form, toChange, resetForm } = useForm({});
@@ -16,10 +18,14 @@ const CreateArticles = () => {
     const { datas } = await Ajax(Global.url + 'crear', 'POST', newArticle);
     if (datas.status === 'success') {
       setResult('Guardado');
+      alertSucces('Artículo guardado exisitosamente');
       // Limpia los campos del formulario al llamar a la función resetForm
       resetForm();
 
-    } else setResult('Error');
+    } else {
+      setResult('Error')
+      alertError('Faltan datos por llenar');
+    }
 
     //1:conseguir el file input
     const fileInput = document.querySelector('#file');
@@ -34,8 +40,13 @@ const CreateArticles = () => {
       if (upLoadImg.datas.status === 'success') {
         setResult('Guardado');
         fileInput.value = '';
+        //llama a la alerta
+        alertSucces('Artículo guardado exisitosamente');
 
-      } else setResult('Error');
+      } else {
+        setResult('Error');
+        alertError('Faltan datos por llenar');
+      }
       console.log(upLoadImg.datas);
     }
 
@@ -47,7 +58,7 @@ const CreateArticles = () => {
 
         <h3>Formulario para crear un artículo</h3>
         <strong>{result === 'Guardado' ? 'Artículo guardado con exito.' : ''}</strong>
-        <strong>{result === 'Error' ? 'Los proporcionados son incorrectos o imcompletos' : ''}</strong>
+        <strong>{result === 'Error' ? 'Los datos proporcionados son incorrectos o imcompletos' : ''}</strong>
         <form className="form" onSubmit={savedArticle}>
 
           <div className="form-group">

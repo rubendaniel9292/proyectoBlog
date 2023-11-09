@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
+
 import { Global } from "../../helper/Global";
 import { Ajax } from "../../helper/Ajax.jsx";
 import { Link } from 'react-router-dom';
+import { alertDelete } from '../../helper/Alerts.jsx';
 
 const ListAricles = ({ articles, setArticles }) => {
     const deleted = async (id) => {
@@ -11,9 +13,9 @@ const ListAricles = ({ articles, setArticles }) => {
         if (datas.status === 'success') {
             //filtrar articulos con id deferente al que le estoy pasando por id
             let articlesUpdate = articles.filter(article => article._id !== id);
-            setArticles(articlesUpdate)
+            alertDelete();
+            setArticles(articlesUpdate);
         }
-
     }
     return (
         <>

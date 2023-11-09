@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from '../hooks/useForm';
 import { Ajax } from "../../helper/Ajax";
 import { Global } from "../../helper/Global";
 import { useParams } from "react-router-dom";
+import { alertSucces, alertError } from '../../helper/Alerts';
 const Edit = () => {
   //metodo para recoger datos del formulario
   const { form, toChange } = useForm({});
@@ -22,15 +22,12 @@ const Edit = () => {
 
   const getArticles = async () => {
     //peticion ajax y que espere hasta obeter el array completo
-
     const { datas } = await Ajax(Global.url + 'articulo/' + params.id, 'GET')
-
     if (datas.status === 'success') {
       setArticle(datas.article);
 
     }
     console.log(datas.article);
-
   }
 
   //metodo para editar el articulo seleccionado
@@ -42,23 +39,33 @@ const Edit = () => {
     const { datas } = await Ajax(Global.url + 'articulo/' + params.id, 'PUT', newArticle);
     if (datas.status === 'success') {
       setResult('Guardado');
-      
-    } else setResult('Error');
+      alertSucces('Artículo actualizado correctamente');
+
+    } else {
+      alertError('Faltan datos por llenar o no has proporcionados datos nuevos');
+      setResult('Error');
+    }
 
     //1:conseguir el file input
     const fileInput = document.querySelector('#file');
     //compobabo el resulatdo de la peficion ajax
     if (datas.status === 'success' && fileInput.files[0]) {
       setResult('Guardado');
+      
       //subi imagen
       const formData = new FormData();
       formData.append('file', fileInput.files[0]);
       const upLoadImg = await Ajax(Global.url + 'subir-img/' + datas.article._id, 'POST', formData, true);
+      
 
       if (upLoadImg.datas.status === 'success') {
         setResult('Guardado');
+        alertSucces('Artículo actualizado correctamente');
 
-      } else setResult('Error');
+      } else {
+        setResult('Error');
+
+      }
       console.log(upLoadImg.datas);
     }
   }
@@ -67,7 +74,7 @@ const Edit = () => {
       <div className="jumbo">
 
         <h3>Formulario para Editar el artículo: {article.title}</h3>
-      
+
         <strong>{result === 'Guardado' ? 'Articulo guardado con exito.' : ''}</strong>
         <strong>{result === 'Error' ? 'Los proporcionados son incorrectos o imcompletos' : ''}</strong>
         <form className="form" onSubmit={editArticle}>
